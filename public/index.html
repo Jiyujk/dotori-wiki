@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>땅콩위키 - PeanutWiki</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .auth-section, .wiki-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #5a6fd8;
+        }
+        .hidden {
+            display: none;
+        }
+        .document-list {
+            list-style: none;
+            padding: 0;
+        }
+        .document-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .document-item:hover {
+            background: #e9ecef;
+        }
+        .wiki-content {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            min-height: 200px;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .user-info {
+            float: right;
+            color: white;
+        }
+        textarea {
+            height: 200px;
+            font-family: monospace;
+        }
+        .document-meta {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🥜 땅콩위키 (PeanutWiki)</h1>
+        <div class="user-info" id="userInfo"></div>
+    </div>
+
+    <div id="status"></div>
+
+    <!-- 로그인/회원가입 섹션 -->
+    <div class="auth-section" id="authSection">
+        <h2>로그인 / 회원가입</h2>
+        <div class="form-group">
+            <label for="username">사용자명:</label>
+            <input type="text" id="username" placeholder="사용자명을 입력하세요">
+        </div>
+        <div class="form-group">
+            <label for="password">비밀번호:</label>
+            <input type="password" id="password" placeholder="비밀번호를 입력하세요">
+        </div>
+        <button onclick="login()">로그인</button>
+        <button onclick="register()">회원가입</button>
+    </div>
+
+    <!-- 위키 섹션 -->
+    <div class="wiki-section hidden" id="wikiSection">
+        <h2>위키 문서 관리</h2>
+        <button onclick="showDocumentList()">문서 목록</button>
+        <button onclick="showCreateForm()">새 문서 작성</button>
+        <button onclick="logout()">로그아웃</button>
+
+        <!-- 문서 목록 -->
+        <div id="documentListDiv" class="hidden">
+            <h3>문서 목록</h3>
+            <ul id="documentList" class="document-list"></ul>
+        </div>
+
+        <!-- 문서 작성/수정 폼 -->
+        <div id="documentFormDiv" class="hidden">
+            <h3 id="formTitle">새 문서 작성</h3>
+            <div class="form-group">
+                <label for="docTitle">문서 제목:</label>
+                <input type="text" id="docTitle" placeholder="문서 제목을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="docContent">문서 내용 (위키 문법 지원):</label>
+                <textarea id="docContent" placeholder="위키 문법으로 내용을 작성하세요...
+예시:
+'''굵은 글씨'''
+[[다른 문서로의 링크]]
+> 인용문
+||표||셀||
+[youtube(영상ID)]
+[include(틀:국기, 국명=대한민국)]"></textarea>
+            </div>
+            <button onclick="saveDocument()" id="saveBtn">저장</button>
+            <button onclick="hideForm()">취소</button>
+        </div>
+
+        <!-- 문서 보기 -->
+        <div id="documentViewDiv" class="hidden">
+            <h3 id="viewTitle"></h3>
+            <div class="document-meta" id="viewMeta"></div>
+            <div class="wiki-content" id="viewContent"></div>
+            <button onclick="editDocument()" id="editBtn" class="hidden">수정</button>
+            <button onclick="hideView()">목록으로</button>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let currentDocument = null;
+        let isEditing = false;
+
+        // 페이지 로드 시 로그인 상태 확인
+        checkLoginStatus();
+
+        async function checkLoginStatus() {
+            try {
+                const response = await fetch('/api/me');
+                const data = await response.json();
+                if (data.loggedIn) {
+                    currentUser = data.username;
+                    showWikiSection();
+                } else {
+                    showAuthSection();
+                }
+            } catch (error) {
+                showStatus('로그인 상태 확인 실패', 'error');
+            }
+        }
+
+        async function register() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                showStatus('사용자명과 비밀번호를 입력하세요', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showStatus(data.message, 'success');
+                    document.getElementById('username').value = '';
+                    document.getElementById('password').value = '';
+                } else {
+                    showStatus(data.error, 'error');
+                }
+            } catch (error) {
+                showStatus('회원가입 실패', 'error');
+            }
+        }
+
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                showStatus('사용자명과 비밀번호를 입력하세요', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    currentUser = data.username;
+                    showStatus(data.message, 'success');
+                    showWikiSection();
+                } else {
+                    showStatus(data.error, 'error');
+                }
+            } catch (error) {
+                showStatus('로그인 실패', 'error');
+            }
+        }
+
+        async function logout() {
+            try {
+                const response = await fetch('/api/logout', { method: 'POST' });
+                const data = await response.json();
+                currentUser = null;
+                showStatus(data.message, 'success');
+                showAuthSection();
+            } catch (error) {
+                showStatus('로그아웃 실패', 'error');
+            }
+        }
+
+        async function loadDocuments() {
+            try {
+                const response = await fetch('/api/documents');
+                const documents = await response.json();
+                
+                const list = document.getElementById('documentList');
+                list.innerHTML = '';
+                
+                documents.forEach(doc => {
+                    const li = document.createElement('li');
+                    li.className = 'document-item';
+                    li.innerHTML = `
+                        <strong>${doc.title}</strong>
+                        <div class="document-meta">
+                            작성: ${new Date(doc.created_at).toLocaleString('ko-KR')} | 
+                            수정: ${new Date(doc.updated_at).toLocaleString('ko-KR')}
+                        </div>
+                    `;
+                    li.onclick = () => viewDocument(doc.id);
+                    list.appendChild(li);
+                });
+            } catch (error) {
+                showStatus('문서 목록 로드 실패', 'error');
+            }
+        }
+
+        async function viewDocument(id) {
+            try {
+                const response = await fetch(`/api/documents/${id}`);
+                const doc = await response.json();
+                
+                if (response.ok) {
+                    currentDocument = doc;
+                    document.getElementById('viewTitle').textContent = doc.title;
+                    document.getElementById('viewMeta').innerHTML = `
+                        작성자 ID: ${doc.creator_id} | 
+                        작성일: ${new Date(doc.created_at).toLocaleString('ko-KR')} | 
+                        수정일: ${new Date(doc.updated_at).toLocaleString('ko-KR')}
+                    `;
+                    document.getElementById('viewContent').innerHTML = doc.parsedContent;
+                    
+                    // 작성자만 수정 가능 (실제로는 서버에서 creator_id와 현재 사용자 비교 필요)
+                    document.getElementById('editBtn').classList.remove('hidden');
+                    
+                    hideAllSections();
+                    document.getElementById('documentViewDiv').classList.remove('hidden');
+                } else {
+                    showStatus(doc.error, 'error');
+                }
+            } catch (error) {
+                showStatus('문서 로드 실패', 'error');
+            }
+        }
+
+        async function saveDocument() {
+            const title = document.getElementById('docTitle').value;
+            const content = document.getElementById('docContent').value;
+            
+            if (!title || !content) {
+                showStatus('제목과 내용을 입력하세요', 'error');
+                return;
+            }
+
+            try {
+                let response, data;
+                
+                if (isEditing && currentDocument) {
+                    response = await fetch(`/api/documents/${currentDocument.id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ content })
+                    });
+                } else {
+                    response = await fetch('/api/documents', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ title, content })
+                    });
+                }
+                
+                data = await response.json();
+                
+                if (response.ok) {
+                    showStatus(data.message, 'success');
+                    hideForm();
+                    showDocumentList();
+                } else {
+                    showStatus(data.error, 'error');
+                }
+            } catch (error) {
+                showStatus('문서 저장 실패', 'error');
+            }
+        }
+
+        function showAuthSection() {
+            document.getElementById('authSection').classList.remove('hidden');
+            document.getElementById('wikiSection').classList.add('hidden');
+            document.getElementById('userInfo').textContent = '';
+        }
+
+        function showWikiSection() {
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('wikiSection').classList.remove('hidden');
+            document.getElementById('userInfo').textContent = `환영합니다, ${currentUser}님!`;
+            showDocumentList();
+        }
+
+        function showDocumentList() {
+            hideAllSections();
+            document.getElementById('documentListDiv').classList.remove('hidden');
+            loadDocuments();
+        }
+
+        function showCreateForm() {
+            hideAllSections();
+            document.getElementById('formTitle').textContent = '새 문서 작성';
+            document.getElementById('docTitle').value = '';
+            document.getElementById('docTitle').disabled = false;
+            document.getElementById('docContent').value = '';
+            document.getElementById('saveBtn').textContent = '저장';
+            document.getElementById('documentFormDiv').classList.remove('hidden');
+            isEditing = false;
+        }
+
+        function editDocument() {
+            if (!currentDocument) return;
+            
+            hideAllSections();
+            document.getElementById('formTitle').textContent = '문서 수정';
+            document.getElementById('docTitle').value = currentDocument.title;
+            document.getElementById('docTitle').disabled = true;
+            document.getElementById('docContent').value = currentDocument.rawContent;
+            document.getElementById('saveBtn').textContent = '수정 완료';
+            document.getElementById('documentFormDiv').classList.remove('hidden');
+            isEditing = true;
+        }
+
+        function hideForm() {
+            document.getElementById('documentFormDiv').classList.add('hidden');
+            showDocumentList();
+        }
+
+        function hideView() {
+            document.getElementById('documentViewDiv').classList.add('hidden');
+            showDocumentList();
+        }
+
+        function hideAllSections() {
+            document.getElementById('documentListDiv').classList.add('hidden');
+            document.getElementById('documentFormDiv').classList.add('hidden');
+            document.getElementById('documentViewDiv').classList.add('hidden');
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+            setTimeout(() => {
+                statusDiv.innerHTML = '';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
