@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>땅콩위키</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            border-radius: 10px;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        
+        .auth-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        input[type="text"], input[type="password"], textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus, input[type="password"]:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            margin-left: 0.5rem;
+        }
+        
+        .documents-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .document-list {
+            list-style: none;
+        }
+        
+        .document-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+            transition: transform 0.2s;
+        }
+        
+        .document-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .document-title {
+            font-weight: 600;
+            color: #667eea;
+            text-decoration: none;
+            font-size: 1.1rem;
+        }
+        
+        .document-meta {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+        
+        .create-form {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+        }
+        
+        textarea {
+            min-height: 200px;
+            resize: vertical;
+        }
+        
+        .wiki-syntax-help {
+            background: #e9ecef;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .user-info {
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+        }
+        
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            padding: 0.5rem;
+            border-radius: 5px;
+            margin: 0.5rem 0;
+        }
+        
+        .success {
+            color: #155724;
+            background: #d4edda;
+            padding: 0.5rem;
+            border-radius: 5px;
+            margin: 0.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>🥜 땅콩위키</h1>
+            <div id="userInfo" class="user-info hidden"></div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <!-- 로그인/회원가입 섹션 -->
+        <div id="authSection" class="auth-section">
+            <div id="loginForm">
+                <h2>로그인</h2>
+                <div class="form-group">
+                    <label for="loginUsername">아이디:</label>
+                    <input type="text" id="loginUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">비밀번호:</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button onclick="login()">로그인</button>
+                <button class="btn-secondary" onclick="showRegister()">회원가입</button>
+            </div>
+            
+            <div id="registerForm" class="hidden">
+                <h2>회원가입</h2>
+                <div class="form-group">
+                    <label for="registerUsername">아이디:</label>
+                    <input type="text" id="registerUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">비밀번호:</label>
+                    <input type="password" id="registerPassword" required>
+                </div>
+                <button onclick="register()">회원가입</button>
+                <button class="btn-secondary" onclick="showLogin()">로그인으로</button>
+            </div>
+            
+            <div id="message"></div>
+        </div>
+        
+        <!-- 문서 관리 섹션 -->
+        <div id="documentsSection" class="documents-section hidden">
+            <h2>문서 목록</h2>
+            <button onclick="showCreateForm()">새 문서 작성</button>
+            <button class="btn-secondary" onclick="logout()">로그아웃</button>
+            
+            <div id="createForm" class="create-form hidden">
+                <h3>새 문서 작성</h3>
+                <div class="form-group">
+                    <label for="documentTitle">제목:</label>
+                    <input type="text" id="documentTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="documentContent">내용:</label>
+                    <textarea id="documentContent" placeholder="위키 문법을 사용하여 작성하세요..."></textarea>
+                </div>
+                <button onclick="createDocument()">문서 생성</button>
+                <button class="btn-secondary" onclick="hideCreateForm()">취소</button>
+                
+                <div class="wiki-syntax-help">
+                    <strong>위키 문법 도움말:</strong><br>
+                    • '''굵은 글씨''' → <strong>굵은 글씨</strong><br>
+                    • [[문서명]] → 다른 문서로 링크<br>
+                    • [[문서명|표시텍스트]] → 커스텀 링크 텍스트<br>
+                    • ||셀1||셀2|| → 표 만들기<br>
+                    • > 인용문 → 인용 블록<br>
+                    • [youtube(영상ID)] → 유튜브 동영상 삽입<br>
+                    • [include(틀:국기, 국명=한국)] → 템플릿 사용
+                </div>
+            </div>
+            
+            <ul id="documentList" class="document-list"></ul>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+
+        // 페이지 로드 시 로그인 상태 확인
+        window.onload = function() {
+            checkLoginStatus();
+        };
+
+        async function checkLoginStatus() {
+            try {
+                const response = await fetch('/api/me');
+                const data = await response.json();
+                
+                if (data.loggedIn) {
+                    currentUser = data.username;
+                    showDocumentsSection();
+                    loadDocuments();
+                } else {
+                    showAuthSection();
+                }
+            } catch (error) {
+                console.error('로그인 상태 확인 오류:', error);
+                showAuthSection();
+            }
+        }
+
+        function showAuthSection() {
+            document.getElementById('authSection').classList.remove('hidden');
+            document.getElementById('documentsSection').classList.add('hidden');
+            document.getElementById('userInfo').classList.add('hidden');
+        }
+
+        function showDocumentsSection() {
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('documentsSection').classList.remove('hidden');
+            document.getElementById('userInfo').classList.remove('hidden');
+            document.getElementById('userInfo').textContent = `환영합니다, ${currentUser}님!`;
+        }
+
+        function showLogin() {
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+            clearMessage();
+        }
+
+        function showRegister() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+            clearMessage();
+        }
+
+        function showCreateForm() {
+            document.getElementById('createForm').classList.remove('hidden');
+        }
+
+        function hideCreateForm() {
+            document.getElementById('createForm').classList.add('hidden');
+            document.getElementById('documentTitle').value = '';
+            document.getElementById('documentContent').value = '';
+        }
+
+        function clearMessage() {
+            document.getElementById('message').innerHTML = '';
+        }
+
+        function showMessage(message, isError = false) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `<div class="${isError ? 'error' : 'success'}">${message}</div>`;
+        }
+
+        async function register() {
+            const username = document.getElementById('registerUsername').value;
+            const password = document.getElementById('registerPassword').value;
+
+            if (!username || !password) {
+                showMessage('아이디와 비밀번호를 입력하세요.', true);
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage(data.message);
+                    setTimeout(() => {
+                        showLogin();
+                        document.getElementById('registerUsername').value = '';
+                        document.getElementById('registerPassword').value = '';
+                    }, 1500);
+                } else {
+                    showMessage(data.error, true);
+                }
+            } catch (error) {
+                showMessage('회원가입 중 오류가 발생했습니다.', true);
+            }
+        }
+
+        async function login() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (!username || !password) {
+                showMessage('아이디와 비밀번호를 입력하세요.', true);
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    currentUser = data.username;
+                    showDocumentsSection();
+                    loadDocuments();
+                    document.getElementById('loginUsername').value = '';
+                    document.getElementById('loginPassword').value = '';
+                } else {
+                    showMessage(data.error, true);
+                }
+            } catch (error) {
+                showMessage('로그인 중 오류가 발생했습니다.', true);
+            }
+        }
+
+        async function logout() {
+            try {
+                await fetch('/api/logout', { method: 'POST' });
+                currentUser = null;
+                showAuthSection();
+                clearMessage();
+            } catch (error) {
+                console.error('로그아웃 오류:', error);
+            }
+        }
+
+        async function createDocument() {
+            const title = document.getElementById('documentTitle').value;
+            const content = document.getElementById('documentContent').value;
+
+            if (!title || !content) {
+                alert('제목과 내용을 입력하세요.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/documents', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, content })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    hideCreateForm();
+                    loadDocuments();
+                    alert(data.message);
+                } else {
+                    alert(data.error);
+                }
+            } catch (error) {
+                alert('문서 생성 중 오류가 발생했습니다.');
+            }
+        }
+
+        async function loadDocuments() {
+            try {
+                const response = await fetch('/api/documents');
+                const documents = await response.json();
+
+                const listElement = document.getElementById('documentList');
+                listElement.innerHTML = '';
+
+                documents.forEach(doc => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'document-item';
+                    listItem.innerHTML = `
+                        <a href="/wiki/${encodeURIComponent(doc.title)}" class="document-title">${doc.title}</a>
+                        <div class="document-meta">
+                            생성: ${new Date(doc.created_at).toLocaleString('ko-KR')} | 
+                            수정: ${new Date(doc.updated_at).toLocaleString('ko-KR')}
+                        </div>
+                    `;
+                    listElement.appendChild(listItem);
+                });
+            } catch (error) {
+                console.error('문서 목록 로드 오류:', error);
+            }
+        }
+
+        // Enter 키로 로그인/회원가입
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                if (!document.getElementById('loginForm').classList.contains('hidden')) {
+                    login();
+                } else if (!document.getElementById('registerForm').classList.contains('hidden')) {
+                    register();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
