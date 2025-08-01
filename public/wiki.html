@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문서 보기 - 땅콩위키</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            border-radius: 10px;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 1rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.2);
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .document-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .document-header {
+            border-bottom: 2px solid #e1e5e9;
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .document-title {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        
+        .document-meta {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .document-actions {
+            margin: 1rem 0;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.2s;
+            margin-right: 0.5rem;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .document-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+        
+        .document-content h1, .document-content h2, .document-content h3 {
+            margin: 1.5rem 0 1rem 0;
+            color: #333;
+        }
+        
+        .document-content table {
+            width: 100%;
+            margin: 1rem 0;
+            border-collapse: collapse;
+        }
+        
+        .document-content table td, .document-content table th {
+            padding: 0.5rem;
+            border: 1px solid #dee2e6;
+        }
+        
+        .document-content table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        .document-content blockquote {
+            border-left: 4px solid #667eea;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #f8f9fa;
+            font-style: italic;
+        }
+        
+        .document-content a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .document-content a:hover {
+            text-decoration: underline;
+        }
+        
+        .document-content iframe {
+            margin: 1rem 0;
+            max-width: 100%;
+        }
+        
+        .edit-form {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 400px;
+            padding: 1rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .error-section {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #6c757d;
+        }
+        
+        .wiki-syntax-help {
+            background: #e9ecef;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .user-info {
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>🥜 땅콩위키</h1>
+            <div class="nav-links">
+                <a href="/">홈으로</a>
+                <div id="userInfo" class="user-info" style="display: inline-block;"></div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div id="loadingSection" class="loading">
+            문서를 불러오는 중...
+        </div>
+        
+        <div id="errorSection" class="error-section hidden">
+            <h2>😞 문서를 찾을 수 없습니다</h2>
+            <p>요청하신 문서가 존재하지 않거나 삭제되었습니다.</p>
+            <button onclick="location.href='/'">홈으로 돌아가기</button>
+        </div>
+        
+        <div id="documentSection" class="document-section hidden">
+            <div class="document-header">
+                <h1 id="documentTitle" class="document-title"></h1>
+                <div id="documentMeta" class="document-meta"></div>
+            </div>
+            
+            <div class="document-actions">
+                <button id="editBtn" onclick="showEditForm()" class="hidden">문서 편집</button>
+                <button onclick="location.href='/'" class="btn-secondary">목록으로</button>
+            </div>
+            
+            <div id="documentContent" class="document-content"></div>
+            
+            <div id="editForm" class="edit-form hidden">
+                <h3>문서 편집</h3>
+                <textarea id="editContent" placeholder="위키 문법을 사용하여 편집하세요..."></textarea>
+                <div style="margin-top: 1rem;">
+                    <button onclick="saveDocument()">저장</button>
+                    <button class="btn-secondary" onclick="hideEditForm()">취소</button>
+                </div>
+                
+                <div class="wiki-syntax-help">
+                    <strong>위키 문법 도움말:</strong><br>
+                    • '''굵은 글씨''' → <strong>굵은 글씨</strong><br>
+                    • [[문서명]] → 다른 문서로 링크<br>
+                    • [[문서명|표시텍스트]] → 커스텀 링크 텍스트<br>
+                    • ||셀1||셀2|| → 표 만들기<br>
+                    • > 인용문 → 인용 블록<br>
+                    • [youtube(영상ID)] → 유튜브 동영상 삽입<br>
+                    • [include(틀:국기, 국명=한국)] → 템플릿 사용
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentDocument = null;
+        let currentUser = null;
+
+        window.onload = function() {
+            checkLoginStatus();
+            loadDocument();
+        };
+
+        async function checkLoginStatus() {
+            try {
+                const response = await fetch('/api/me');
+                const data = await response.json();
+                
+                if (data.loggedIn) {
+                    currentUser = data.username;
+                    document.getElementById('userInfo').textContent = `${data.username}님`;
+                } else {
+                    document.getElementById('userInfo').textContent = '비로그인';
+                }
+            } catch (error) {
+                console.error('로그인 상태 확인 오류:', error);
+            }
+        }
+
+        function getDocumentTitle() {
+            const path = window.location.pathname;
+            const title = path.replace('/wiki/', '');
+            return decodeURIComponent(title);
+        }
+
+        async function loadDocument() {
+            const title = getDocumentTitle();
+            
+            try {
+                const response = await fetch(`/api/documents/title/${encodeURIComponent(title)}`);
+                
+                if (response.ok) {
+                    const document = await response.json();
+                    displayDocument(document);
+                } else {
+                    showError();
+                }
+            } catch (error) {
+                console.error('문서 로드 오류:', error);
+                showError();
+            }
+        }
+
+        function displayDocument(document) {
+            currentDocument = document;
+            
+            document.getElementById('loadingSection').classList.add('hidden');
+            document.getElementById('errorSection').classList.add('hidden');
+            document.getElementById('documentSection').classList.remove('hidden');
+            
+            document.getElementById('documentTitle').textContent = document.title;
+            document.getElementById('documentMeta').innerHTML = `
+                생성일: ${new Date(document.created_at).toLocaleString('ko-KR')} | 
+                수정일: ${new Date(document.updated_at).toLocaleString('ko-KR')}
+            `;
+            document.getElementById('documentContent').innerHTML = document.parsedContent;
+            
+            // 편집 권한 확인 (작성자만 편집 가능)
+            if (currentUser && document.creator_id) {
+                // 현재는 로그인한 사용자라면 편집 가능하도록 설정 (실제로는 creator_id 비교 필요)
+                document.getElementById('editBtn').classList.remove('hidden');
+            }
+            
+            // 문서 제목 업데이트
+            document.title = `${document.title} - 땅콩위키`;
+        }
+
+        function showError() {
+            document.getElementById('loadingSection').classList.add('hidden');
+            document.getElementById('documentSection').classList.add('hidden');
+            document.getElementById('errorSection').classList.remove('hidden');
+        }
+
+        function showEditForm() {
+            if (!currentUser) {
+                alert('편집하려면 로그인이 필요합니다.');
+                return;
+            }
+            
+            document.getElementById('editContent').value = currentDocument.rawContent;
+            document.getElementById('editForm').classList.remove('hidden');
+            document.getElementById('editBtn').classList.add('hidden');
+        }
+
+        function hideEditForm() {
+            document.getElementById('editForm').classList.add('hidden');
+            document.getElementById('editBtn').classList.remove('hidden');
+        }
+
+        async function saveDocument() {
+            const content = document.getElementById('editContent').value;
+            
+            if (!content.trim()) {
+                alert('내용을 입력하세요.');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/documents/${currentDocument.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert(data.message);
+                    hideEditForm();
+                    // 문서 다시 로드
+                    loadDocument();
+                } else {
+                    alert(data.error);
+                }
+            } catch (error) {
+                alert('문서 저장 중 오류가 발생했습니다.');
+                console.error('저장 오류:', error);
+            }
+        }
+
+        // 링크 클릭 처리 (SPA 스타일)
+        document.addEventListener('click', function(e) {
+            if (e.target.tagName === 'A' && e.target.href.includes('/wiki/')) {
+                e.preventDefault();
+                window.location.href = e.target.href;
+            }
+        });
+    </script>
+</body>
+</html>
