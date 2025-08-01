@@ -219,6 +219,7 @@ app.get('/api/documents', (req, res) => {
 });
 
 const PORT = 4000;
-app.listen(PORT, () => {
-  console.log(`땅콩위키 서버 실행 중 - http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`땅콩위키 서버 실행 중 - http://0.0.0.0:${PORT}`);
+  console.log(`로컬 접속: http://localhost:${PORT}`);
 });
