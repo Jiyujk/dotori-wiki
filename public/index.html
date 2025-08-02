@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>땅콩위키</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+        }
+
+        .nav {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .nav button, .nav a {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .nav button:hover, .nav a:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: flex;
+            gap: 2rem;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 2rem;
+        }
+
+        .main-content {
+            flex: 1;
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            min-height: 600px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e1e8ed;
+            border-radius: 25px;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .menu-section {
+            margin-bottom: 2rem;
+        }
+
+        .menu-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .menu-item {
+            display: block;
+            padding: 0.5rem 0;
+            color: #666;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            padding-left: 0.5rem;
+        }
+
+        .menu-item:hover {
+            color: #667eea;
+            background: #f8f9ff;
+            padding-left: 1rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .page-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #444;
+        }
+
+        .edit-area {
+            width: 100%;
+            min-height: 400px;
+            padding: 1rem;
+            border: 2px solid #e1e8ed;
+            border-radius: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+
+        .edit-area:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-right: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .user-info {
+            color: white;
+            font-weight: 500;
+        }
+
+        .page-meta {
+            background: #f8f9ff;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .search-results {
+            list-style: none;
+        }
+
+        .search-results li {
+            background: #f8f9ff;
+            margin-bottom: 0.5rem;
+            padding: 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-results li:hover {
+            background: #e8f0ff;
+            transform: translateY(-2px);
+        }
+
+        .highlight {
+            background: #ffeb3b;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+        }
+
+        .history-item {
+            background: #f8f9ff;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .history-date {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .error-message {
+            background: #ff6b6b;
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .success-message {
+            background: #51cf66;
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            
+            .sidebar {
+                width: 100%;
+                position: static;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        .viral-container {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .viral-score {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .file-upload {
+            border: 2px dashed #667eea;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .file-upload:hover {
+            background: #f8f9ff;
+            border-color: #5a67d8;
+        }
+
+        .file-list {
+            list-style: none;
+        }
+
+        .file-item {
+            background: #f8f9ff;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-name {
+            font-weight: 500;
+        }
+
+        .file-size {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .favorite-btn {
+            background: none;
+            border: none;
+            color: #ffd700;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .favorite-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .favorite-btn.active {
+            color: #ff6b6b;
+        }
+
+        .blocked-user {
+            background: #ff6b6b;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        .activity-item {
+            border-left: 4px solid #667eea;
+            padding-left: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        .activity-time {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .activity-content {
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="#" class="logo" onclick="showMainPage()">🥜 땅콩위키</a>
+            <nav class="nav">
+                <input type="text" class="search-box" id="headerSearch" placeholder="문서 검색..." onkeypress="if(event.key==='Enter') searchDocuments()">
+                <span class="user-info" id="userInfo">
+                    <button onclick="showLoginModal()">로그인</button>
+                    <button onclick="showRegisterModal()">회원가입</button>
+                </span>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <div class="menu-section">
+                <div class="menu-title">탐색</div>
+                <a class="menu-item" onclick="showMainPage()">메인 페이지</a>
+                <a class="menu-item" onclick="showRandomPage()">임의 문서</a>
+                <a class="menu-item" onclick="showAllDocuments()">모든 문서</a>
+                <a class="menu-item" onclick="showRecentChanges()">최근 변경</a>
+            </div>
+            
+            <div class="menu-section">
+                <div class="menu-title">사용자</div>
+                <a class="menu-item" onclick="showUserList()">사용자 목록</a>
+                <a class="menu-item" onclick="showMyFavorites()">내 즐겨찾기</a>
+                <a class="menu-item" onclick="showActivityFeed()">활동 피드</a>
+            </div>
+
+            <div class="menu-section">
+                <div class="menu-title">도구</div>
+                <a class="menu-item" onclick="showCreatePage()">새 문서 만들기</a>
+                <a class="menu-item" onclick="showFileManager()">파일 관리</a>
+                <a class="menu-item" onclick="showStatistics()">통계</a>
+                <a class="menu-item" onclick="showPopularPages()">인기 문서</a>
+                <a class="menu-item" onclick="showBlockedUsers()">차단된 사용자</a>
+            </div>
+
+            <div class="viral-container">
+                <div class="viral-score" id="viralScore">0</div>
+                <div>바이럴 점수</div>
+                <div style="font-size: 0.8rem; margin-top: 0.5rem;">
+                    활동할수록 증가!
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content" id="mainContent">
+            <h1 class="page-title">🥜 땅콩위키에 오신 것을 환영합니다!</h1>
+            <div class="page-content">
+                <p>땅콩위키는 모든 사람이 함께 만들어가는 지식 공유 플랫폼입니다.</p>
+                <p>자유롭게 문서를 작성하고 편집하여 지식을 나누어 보세요.</p>
+                
+                <h3 style="margin-top: 2rem; color: #667eea;">✨ 주요 기능</h3>
+                <ul style="margin-left: 2rem; margin-top: 1rem;">
+                    <li>📝 실시간 문서 편집</li>
+                    <li>🔍 강력한 검색 기능</li>
+                    <li>📊 상세한 통계 정보</li>
+                    <li>⭐ 즐겨찾기 시스템</li>
+                    <li>📱 모바일 최적화</li>
+                    <li>🛡️ 스팸 자동 차단</li>
+                    <li>🚀 바이럴 마케팅 시스템</li>
+                </ul>
+
+                <h3 style="margin-top: 2rem; color: #667eea;">🚀 시작하기</h3>
+                <p style="margin-top: 1rem;">
+                    1. 회원가입을 하여 계정을 만드세요<br>
+                    2. 새 문서를 만들거나 기존 문서를 편집해보세요<br>
+                    3. 다른 사용자들과 지식을 공유하고 토론하세요
+                </p>
+                
+                <div style="margin-top: 2rem; padding: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 15px;">
+                    <h4>💡 위키 문법 도움말</h4>
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+                        **굵게** *기울임* [[링크]] === 제목 === 등의 문법을 사용할 수 있습니다.
+                    </p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 로그인 모달 -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <h2 class="modal-title">로그인</h2>
+            <div class="form-group">
+                <label>사용자명</label>
+                <input type="text" id="loginUsername" placeholder="사용자명을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label>비밀번호</label>
+                <input type="password" id="loginPassword" placeholder="비밀번호를 입력하세요">
+            </div>
+            <button class="btn" onclick="login()">로그인</button>
+            <button class="btn btn-secondary" onclick="closeModal('loginModal')">취소</button>
+        </div>
+    </div>
+
+    <!-- 회원가입 모달 -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <h2 class="modal-title">회원가입</h2>
+            <div class="form-group">
+                <label>사용자명</label>
+                <input type="text" id="registerUsername" placeholder="사용자명을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label>비밀번호</label>
+                <input type="password" id="registerPassword" placeholder="비밀번호를 입력하세요">
+            </div>
+            <div class="form-group">
+                <label>이메일</label>
+                <input type="email" id="registerEmail" placeholder="이메일을 입력하세요">
+            </div>
+            <button class="btn" onclick="register()">회원가입</button>
+            <button class="btn btn-secondary" onclick="closeModal('registerModal')">취소</button>
+        </div>
+    </div>
+
+    <script>
+        // 전역 변수들
+        let currentUser = null;
+        let currentPage = 'main';
+        let documents = JSON.parse(localStorage.getItem('wiki_documents') || '{}');
+        let users = JSON.parse(localStorage.getItem('wiki_users') || '{}');
+        let pageViews = JSON.parse(localStorage.getItem('wiki_views') || '{}');
+        let favorites = JSON.parse(localStorage.getItem('wiki_favorites') || '{}');
+        let uploadedFiles = JSON.parse(localStorage.getItem('wiki_files') || '{}');
+        let blockedUsers = JSON.parse(localStorage.getItem('wiki_blocked') || '[]');
+        let violations = JSON.parse(localStorage.getItem('wiki_violations') || '{}');
+        let viralScore = parseInt(localStorage.getItem('wiki_viral') || '0');
+
+        // 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            checkLogin();
+            updateViralScore();
+            showMainPage();
+        });
+
+        // 로그인 상태 확인
+        function checkLogin() {
+            const savedUser = localStorage.getItem('wiki_current_user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                updateUserInfo();
+            }
+        }
+
+        // 사용자 정보 업데이트
+        function updateUserInfo() {
+            const userInfo = document.getElementById('userInfo');
+            if (currentUser) {
+                userInfo.innerHTML = `
+                    <span>안녕하세요, ${currentUser.username}님!</span>
+                    <button onclick="logout()">로그아웃</button>
+                `;
+            } else {
+                userInfo.innerHTML = `
+                    <button onclick="showLoginModal()">로그인</button>
+                    <button onclick="showRegisterModal()">회원가입</button>
+                `;
+            }
+        }
+
+        // 모달 표시
+        function showLoginModal() {
+            document.getElementById('loginModal').style.display = 'block';
+        }
+
+        function showRegisterModal() {
+            document.getElementById('registerModal').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // 로그인
+        function login() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (!username || !password) {
+                alert('사용자명과 비밀번호를 입력해주세요.');
+                return;
+            }
+
+            // 차단된 사용자 확인
+            if (blockedUsers.includes(username)) {
+                alert('차단된 사용자입니다.');
+                return;
+            }
+
+            if (users[username] && users[username].password === password) {
+                currentUser = users[username];
+                localStorage.setItem('wiki_current_user', JSON.stringify(currentUser));
+                updateUserInfo();
+                closeModal('loginModal');
+                increaseViralScore(5);
+                addActivity('로그인했습니다');
+            } else {
+                alert('사용자명 또는 비밀번호가 올바르지 않습니다.');
+            }
+        }
+
+        // 회원가입
+        function register() {
+            const username = document.getElementById('registerUsername').value;
+            const password = document.getElementById('registerPassword').value;
+            const email = document.getElementById('registerEmail').value;
+
+            if (!username || !password || !email) {
+                alert('모든 필드를 입력해주세요.');
+                return;
+            }
+
+            if (users[username]) {
+                alert('이미 존재하는 사용자명입니다.');
+                return;
+            }
+
+            // 스팸 검사
+            if (isSpamUser(username)) {
+                alert('스팸으로 판단되어 회원가입이 거부되었습니다.');
+                blockedUsers.push(username);
+                localStorage.setItem('wiki_blocked', JSON.stringify(blockedUsers));
+                return;
+            }
+
+            users[username] = {
+                username: username,
+                password: password,
+                email: email,
+                joinDate: new Date().toISOString()
+            };
+
+            localStorage.setItem('wiki_users', JSON.stringify(users));
+            closeModal('registerModal');
+            increaseViralScore(10);
+            addActivity(`새 사용자 ${username}님이 가입했습니다`);
+            alert('회원가입이 완료되었습니다. 로그인해주세요.');
+        }
+
+        // 로그아웃
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('wiki_current_user');
+            updateUserInfo();
+            addActivity('로그아웃했습니다');
+            showMainPage();
+        }
+
+        // 메인 페이지 표시
+        function showMainPage() {
+            currentPage = 'main';
+            const content = `
+                <h1 class="page-title">🥜 땅콩위키에 오신 것을 환영합니다!</h1>
+                <div class="page-content">
+                    <p>땅콩위키는 모든 사람이 함께 만들어가는 지식 공유 플랫폼입니다.</p>
+                    <p>자유롭게 문서를 작성하고 편집하여 지식을 나누어 보세요.</p>
+                    
+                    <h3 style="margin-top: 2rem; color: #667eea;">✨ 주요 기능</h3>
+                    <ul style="margin-left: 2rem; margin-top: 1rem;">
+                        <li>📝 실시간 문서 편집</li>
+                        <li>🔍 강력한 검색 기능</li>
+                        <li>📊 상세한 통계 정보</li>
+                        <li>⭐ 즐겨찾기 시스템</li>
+                        <li>📱 모바일 최적화</li>
+                        <li>🛡️ 스팸 자동 차단</li>
+                        <li>🚀 바이럴 마케팅 시스템</li>
+                    </ul>
+
+                    <h3 style="margin-top: 2rem; color: #667eea;">🚀 시작하기</h3>
+                    <p style="margin-top: 1rem;">
+                        1. 회원가입을 하여 계정을 만드세요<br>
+                        2. 새 문서를 만들거나 기존 문서를 편집해보세요<br>
+                        3. 다른 사용자들과 지식을 공유하고 토론하세요
+                    </p>
+                    
+                    <div style="margin-top: 2rem; padding: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 15px;">
+                        <h4>💡 위키 문법 도움말</h4>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+                            **굵게** *기울임* [[링크]] === 제목 === 등의 문법을 사용할 수 있습니다.
+                        </p>
+                    </div>
+                </div>
+            `;
+            document.getElementById('mainContent').innerHTML = content;
+        }
+
+        // 문서 표시
+        function showDocument(title) {
+            currentPage = title;
+            const doc = documents[title];
+            
+            if (!doc) {
+                showCreatePage(title);
+                return;
+            }
+
+            // 조회수 증가
+            if (!pageViews[title]) pageViews[title] = 0;
+            pageViews[title]++;
+            localStorage.setItem('wiki_views', JSON.stringify(pageViews));
+            
+            const isFavorite = currentUser && favorites[currentUser.username] && favorites[currentUser.username].includes(title);
+            
+            const content = `
+                <div class="page-meta">
+                    작성자: ${doc.author} | 
+                    작성일: ${new Date(doc.created).toLocaleDateString()} | 
+                    수정일: ${new Date(doc.modified).toLocaleDateString()} |
+                    조회수: ${pageViews[title] || 0}
+                    ${currentUser ? `<button class="favorite-btn ${isFavorite ? 'active' : ''}" onclick="toggleFavorite('${title}')">${isFavorite ? '❤️' : '⭐'}</button>` : ''}
+                </div>
+                <h1 class="page-title">${title}</h1>
+                <div class="page-content">${parseWikiText(doc.content)}</div>
+                ${currentUser ? `
+                    <button class="btn" onclick="editDocument('${title}')">편집</button>
+                    <button class="btn btn-secondary" onclick="showHistory('${title}')">역사</button>
+                ` : ''}
+            `;
+            document.getElementById('mainContent').innerHTML = content;
+            increaseViralScore(1);
+        }
+
+        // 문서 편집
+        function editDocument(title) {
+            if (!currentUser) {
+                alert('로그인이 필요합니다.');
+                return;
+            }
+
+            const doc = documents[title];
+            const content = `
+                <h1 class="page-title">${title} 편집</h1>
+                <textarea class="edit-area" id="editContent">${doc ? doc.content : ''}</textarea>
+                <div>
+                    <button class="btn" onclick="saveDocument('${title}')">저장</button>
+                    <button class="btn btn-secondary" onclick="showDocument('${title}')">취소</button>
+                </div>
+            `;
+            document.getElementById('mainContent').innerHTML = content;
+        }
+
+        // 문서 저장
+        function saveDocument(title) {
+            const content = document.getElementById('editContent').value;
+            
+            if (!content.trim()) {
+                alert('내용을 입력해주세요.');
+                return;
+            }
+
+            // 스팸 검사
+            if (isSpamContent(content)) {
+                addViolation(currentUser.username);
+                alert('스팸으로 판단되는 내용입니다.');
+                return;
+            }
+
+            const now = new Date().toISOString();
+            
+            if (documents[title]) {
+                // 기존 문서 수정
+                documents[title].content = content;
+                documents[title].modified = now;
+                documents[title].editor = currentUser.username;
+            } else {
+                // 새 문서 생성
+                documents[title] = {
+                    title: title,
+                    content: content,
+                    author: currentUser.username,
+                    created: now,
+                    modified: now,
+                    editor: currentUser.username
+                };
+            }
+
+            localStorage.setItem('wiki_documents', JSON.stringify(documents));
+            showDocument(title);
+            increaseViralScore(10);
+            addActivity(`문서 "${title}"를 ${documents[title].created === now ? '생성' : '수정'}했습니다`);
+        }
+
+        // 새 문서 생성 페이지
+        function showCreatePage(title = '') {
+            if (!currentUser) {
+                alert('로그인이 필요합니다.');
+                return;
+            }
+
+            const content = `
+                <h1 class="page-title">새 문서 만들기</h1>
+                <div class="form-group">
+                    <label>문서 제목</label>
+                    <input type="text" id="newDocTitle" value="${title}" placeholder="문서 제목을 입력하세요">
+                </div>
+                <textarea class="edit-area" id="newDocContent" placeholder="문서 내용을 입력하세요..."></textarea>
+                <div>
+                    <button class="btn" onclick="createDocument()">생성</button>
+                    <button class="btn btn-secondary" onclick="showMainPage()">취소</button>
+                </div>
+            `;
+            document.getElementById('mainContent').innerHTML = content;
+        }
+
+        // 문서 생성
+        function createDocument() {
+            const title = document.getElementById('newDocTitle').value.trim();
+            const content = document.getElementById('newDocContent').value;
+
+            if (!title) {
+                alert('제목을 입력해주세요.');
+                return;
+            }
+
+            if (documents[title]) {
+                alert('이미 존재하는 문서입니다.');
+                return;
+            }
+
+            if (!content.trim()) {
+                alert('내용을 입력해주세요.');
+                return;
+            }
+
+            // 스팸 검사
+            if (isSpamContent(content) || isSpamContent(title)) {
+                addViolation(currentUser.username);
+                alert('스팸으로 판단되는 내용입니다.');
+                return;
+            }
+
+            const now = new Date().toISOString();
+            documents[title] = {
+                title: title,
+                content: content,
+                author: currentUser.username,
+                created: now,
+                modified: now,
+                editor: currentUser.username
+            };
+
+            localStorage.setItem('wiki_documents', JSON.stringify(documents));
+            showDocument(title);
+            increaseViralScore(15);
+            addActivity(`새 문서 "${title}"를 생성했습니다`);
+        }
+
+        // 문서 검색
+        function searchDocuments() {
+            const query = document.getElementById('headerSearch').value.toLowerCase();
+            if (!query) return;
+
+            const results = [];
+            for (const [title, doc] of Object.entries(documents)) {
+                if (title.toLowerCase().includes(query) || doc.content.toLowerCase().includes(query)) {
+                    results.push({title, doc});
+                }
+            }
+
+            const content = `
+                <h1 class="page-title">검색 결과: "${query}"</h1>
+                ${results.length > 0 ? `
+                    <ul class="search-results">
+                        ${results.map(result => `
+                            <li onclick="showDocument('${result.title}')">
+                                <strong>${highlightText(result.title, query)}</strong>
+                                <p>${highlightText(result.doc.content.substring(0, 200) + '...', query)}</p>
+                            </li>
+                        `).join('')}
+                    </ul>
+                ` : '<p>검색 결과가 없습니다.</p>'}
+            `;
+            document.getElementById('mainContent').innerHTML = content;
+            increaseViralScore(2);
+        }
+
+        // 텍스트 하이라이트
+        function highlightText(text, query) {
+            const regex = new RegExp(`(${query})`, 'gi');
+            return text.replace(regex, '<span class="highlight">$1</span>');
+        }
+
+        // 모든 문서 보기
+        function showAllDocuments() {
+            const docList = Object.keys(documents).sort();
+            const content = `
+                <h1 class="page-title">모든 문서 (${docList.length}개)</h1>
+                ${docList.length > 0 ? `
+                    <ul class="search-results">
+                        ${docList.map(title => `
+                            <li onclick="showDocument('${title}')">
+                                <strong>${title}</strong>
+                                <p>작성자: ${documents[title].author} | 조회수: ${pageViews[title] || 0}</p>
+                            </li>
+                        `).join('')}
+                    </ul>
+                ` : '<p>아직 문서가 없습니다.</p>'}
+            `;
+            document.getElementById('mainContent').innerHTML = content;
+        }
+
+        // 최근 변경사항
+        function showRecentChanges() {
+            const changes = Object.values(documents)
+                .sort((a, b) => new Date(b.modified) - new Date(a.modified))
+                .slice(0, 20);
+
+            const content = `
+                <h1 class="page-title">최근 변경사항</h1>
+                ${changes.length > 0 ? `
+                    <div>
+                        ${changes.map(doc => `
+                            <div class="history-item">
+                                <div class="history-date">${new Date(doc.modified).toLocaleString()}</div>
+                                <strong onclick="showDocument('${doc.title}')" style="cursor: pointer; color: #667eea;">${doc.title}</strong>
+                                <p>편집자: ${doc.editor || doc.author}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : '<p>최근 변경사항이 없습니다.</p>'}
+            `;
+            document.getElementById('mainContent').innerHTML = content;
+        }
+
+        // 사용자 목록
+        function showUserList() {
+            const userList = Object.values(users).sort((a, b) => new Date(b.joinDate) - new Date(a.joinDate));
+            const content = `
+                <h1 class="page-title">사용자 목록 (${userList.length}명)</h1>
+                ${userList.length > 0 ? `
+                    <div>
+                        ${userList.map(user => `
+                            <div class="history-item">
+                                <strong>${user.username}</strong>
+                                <p>가입일: ${new Date(user.joinDate).toLocaleDateString()}</p>
+                                ${blockedUsers.includes(user.username) ? '<span class="blocked-user">차단됨</span>' : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : '<p>등록된 사용자가 없습니다.</p>'}
+            `;
+            document.getElementById('mainContent').innerHTML = content;
+        }
+
+        // 통계
+        function showStatistics() {
+            const totalDocs = Object.keys(documents).length;
+            const totalUsers = Object.keys(users).length;
+            const totalViews = Object.values(pageViews).reduce((sum, views) => sum + views, 0);
+            const totalFiles = Object.keys(uploadedFiles).length;
+
+            const content = `
+                <h1 class="page-title">통계</h1>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">${totalDocs}</div>
+                        <div class="stat-label">총 문서 수</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${totalUsers}</div>
+                        <div class="stat-label">총 사용자 수</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${totalViews}</div>
+                        <div class="stat-label">총 조회수</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${totalFiles}</div>
+                        <div class="stat-label">업로드된 파일</div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('mainContent').innerHTML = content;
+        }
+
+        // 인기 문서
+        function showPopularPages() {
+            const popular = Object.entries(pageViews)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+
+            const content = `
+                <h1 class="page-title">인기 문서</h1>
+                ${popular.length > 0 ? `
+                    <ul class="search-results">
+                        ${popular.map(([title, views]) => `
+                            <li onclick="showDocument('${title}')">
+                                <strong>${title}</strong>
+                                <p>조회수: ${views}회</p>
+                            </li>
+                        `).join('')}
+                    </ul>
+                ` : '<p>조회 기록이 없습니다.</p>'}
+            `;
+            document.getElementById('mainContent').innerHTML = content;
+        }
+
+        // 임의 문서
+        function showRandomPage() {
+            const docKeys = Object.keys(documents);
+            if (docKeys.length === 0) {
+                alert('문서가 없습니다.');
+                return;
+            }
+            const randomDoc = docKeys[Math.floor(Math.random() * docKeys.length)];
+            showDocument(randomDoc);
+        }
+
+        // 문서 히스토리 (간단 버전)
+        function showHistory(title) {
+            const doc = documents[title];
+            const content = `
+                <h1 class="page-title">${title} - 편집 기록</h1>
+                <div class="history-item">
+                    <div class="history-date">${new Date(doc.created).toLocaleString()}</div>
+                    <strong>문서 생성</strong>
+                    <p>작성자: ${doc.author}</p>
+                </div>
+                ${doc.modified !== doc.created ? `
+                    <div class="history-item">
+                        <div class="history-date">${new Date(doc.modified).toLocaleString()}</div>
+                        <strong>문서 수정</strong>
+                        <p>편집자: ${doc.editor || doc.author}</p>
+                    </div>
+                ` : ''}
+                <button class="btn btn-secondary" onclick="showDocument('${title}')">문서로 돌아가기</button>
+            `;
+            document.getElementById('mainContent').innerHTML = content;
+        }
+
+        // 위키 텍스트 파싱
+        function parseWikiText(text) {
+            return text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/=== (.*?) ===/g, '<h3>$1</h3>')
+                .replace(/== (.*?) ==/g, '<h2>$1</h2>')
+                .replace(/\[\[(.*?)\]\]/g, '<a href="#" onclick="showDocument(\'$1\')" style="color: #667eea; text-decoration: none; font-weight: 500;">$1</a>')
+                .replace(/\n/g, '<br>');
+        }
+
+        // 즐겨찾기 토글
+        function toggleFavorite(title) {
+            if (!currentUser) return;
+
+            if (!favorites[currentUser.username]) {
+                favorites[currentUser.username] = [];
+            }
+
+            const userFavorites = favorites[currentUser.username];
+            const index = userFavorites.indexOf(title);
+
+            if (index > -1) {
+                userFavorites.splice(index, 1);
+            } else {
+                userFavorites.push(title);
+            }
+
+            localStorage.setItem('wiki_favorites', JSON.stringify(favorites));
+            showDocument(title); // 페이지 새로고침으로 하트 상태 업데이트
+            increaseViralScore(3);
+        }
+
+        // 내 즐겨찾기
+        function showMyFavorites() {
+            if (!currentUser) {
+                document.getElementById('mainContent').innerHTML = '<h1 class="page-title">로그인이 필요합니다</h1>';
+                return;
+            }
+
+            const userFavorites = favorites[currentUser.username] || [];
+            const content = `
+                <h1 class="page-title">내 즐겨찾기 (${userFavorites.length}개)</h1>
+                ${userFavorites.length > 0 ? `
+                    <ul class="search-results">
+                        ${userFavorites.map(title => `
+                            <li onclick="showDocument('${title}')">
+                                <strong>${title}</strong>
+                                <p>조회수: ${pageViews[title] || 0}회</p>
+                            </li>
+                        `).join('')}
+                    </ul>
+                ` : '<p>즐겨찾기한 문서가 없습니다.</p>'}
+            `;
+            document.getElementById('mainContent').innerHTML = content;
+        }
+
+        // 파일 매니저
+        function showFileManager() {
+            if (!currentUser) {
+                document.getElementById('mainContent').innerHTML = '<h1 class="page-title">로그인이 필요합니다</h1>';
+                return;
+            }
+
+            const fileList = Object.entries(uploadedFiles);
+            const content = `
+                <h1 class="page-title">파일 관리</h1>
+                
+                <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+                    <p>📁 파일을 클릭해서 업로드하세요</p>
+                    <input type="file" id="fileInput" style="display: none" onchange="handleFileUpload(event)">
+                </div>
+
+                <h3 style="margin-top: 2rem;">업로드된 파일 (${fileList.length}개)</h3>
+                ${fileList.length > 0 ? `
+                    <ul class="file-list">
+                        ${fileList.map(([fileName, fileInfo]) => `
+                            <li class="file-item">
+                                <div>
+                                    <div class="file-name">${fileName}</div>
+                                    <div class="file-size">${formatFileSize(fileInfo.size)} | 업로드: ${new Date(fileInfo.uploadDate).toLocaleDateString()}</div>
+                                </div>
+                                <button class="btn btn-secondary" onclick="downloadFile('${fileName}')">다운로드</button>
+                            </li>
+                        `).join('')}
+                    </ul>
+                ` : '<p>업로드된 파일이 없습니다.</p>'}
+            `;
+            document.getElementById('mainContent').innerHTML = content;
+        }
+
+        // 파일 업로드 처리
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // 파일 크기 제한 (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('파일 크기는 5MB 이하여야 합니다.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                uploadedFiles[file.name] = {
+                    name: file.name,
+                    size: file.size,
+                    type: file.type,
+                    data: e.target.result,
+                    uploader: currentUser.username,
+                    uploadDate: new Date().toISOString()
+                };
+                localStorage.setItem('wiki_files', JSON.stringify(uploadedFiles));
+                showFileManager();
+                increaseViralScore(5);
+                addActivity(`파일 "${file.name}"을 업로드했습니다`);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // 파일 다운로드
+        function downloadFile(fileName) {
+            const fileInfo = uploadedFiles[fileName];
+            if (!fileInfo) return;
+
+            const link = document.createElement('a');
+            link.href = fileInfo.data;
+            link.download = fileName;
+            link.click();
+            increaseViralScore(1);
+        }
+
+        // 파일 크기 포맷
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // 스팸 검사
+        function isSpamContent(content) {
+            const spamKeywords = ['광고', '홍보', '돈벌기', '클릭', '바로가기', 'http://', 'https://'];
+            const lowercaseContent = content.toLowerCase();
+            return spamKeywords.some(keyword => lowercaseContent.includes(keyword.toLowerCase()));
+        }
+
+        function isSpamUser(username) {
+            const spamPatterns = [/admin/i, /test/i, /spam/i, /bot/i];
+            return spamPatterns.some(pattern => pattern.test(username));
+        }
+
+        // 위반 기록 추가
+        function addViolation(username) {
+            if (!violations[username]) violations[username] = 0;
+            violations[username]++;
+            
+            if (violations[username] >= 3) {
+                blockedUsers.push(username);
+                localStorage.setItem('wiki_blocked', JSON.stringify(blockedUsers));
+                if (currentUser && currentUser.username === username) {
+                    logout();
+                    alert('스팸 행위로 인해 계정이 차단되었습니다.');
+                }
+            }
+            
+            localStorage.setItem('wiki_violations', JSON.stringify(violations));
+        }
+
+        // 차단된 사용자 목록
+        function showBlockedUsers() {
+            const content = `
+                <h1 class="page-title">차단된 사용자 (${blockedUsers.length}명)</h1>
+                ${blockedUsers.length > 0 ? `
+                    <div>
+                        ${blockedUsers.map(username => `
+                            <div class="blocked-user">${username}</div>
+                        `).join('')}
+                    </div>
+                ` : '<p>차단된 사용자가 없습니다.</p>'}
+            `;
+            document.getElementById('mainContent').innerHTML = content;
+        }
+
+        // 바이럴 점수 시스템
+        function increaseViralScore(points) {
+            viralScore += points;
+            localStorage.setItem('wiki_viral', viralScore.toString());
+            updateViralScore();
+            
+            // 바이럴 이벤트 시뮬레이션
+            if (viralScore % 100 === 0) {
+                setTimeout(() => {
+                    alert(`🎉 바이럴 레벨 업! ${viralScore}점 달성! 위키가 더욱 활성화되었습니다!`);
+                }, 1000);
+            }
+        }
+
+        function updateViralScore() {
+            document.getElementById('viralScore').textContent = viralScore;
+        }
+
+        // 활동 피드
+        let activities = JSON.parse(localStorage.getItem('wiki_activities') || '[]');
+
+        function addActivity(description) {
+            activities.unshift({
+                user: currentUser ? currentUser.username : '익명',
+                description: description,
+                time: new Date().toISOString()
+            });
+            
+            // 최근 50개 활동만 유지
+            if (activities.length > 50) {
+                activities = activities.slice(0, 50);
+            }
+            
+            localStorage.setItem('wiki_activities', JSON.stringify(activities));
+        }
+
+        function showActivityFeed() {
+            const content = `
+                <h1 class="page-title">활동 피드</h1>
+                ${activities.length > 0 ? `
+                    <div>
+                        ${activities.map(activity => `
+                            <div class="activity-item">
+                                <div class="activity-time">${new Date(activity.time).toLocaleString()}</div>
+                                <div class="activity-content">${activity.user}: ${activity.description}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : '<p>활동 기록이 없습니다.</p>'}
+            `;
+            document.getElementById('mainContent').innerHTML = content;
+        }
+
+        // 모달 외부 클릭시 닫기
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+
+        // 엔터키로 로그인/회원가입
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                if (document.getElementById('loginModal').style.display === 'block') {
+                    login();
+                } else if (document.getElementById('registerModal').style.display === 'block') {
+                    register();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
