@@ -1,0 +1,21 @@
+{
+  "name": "ttangkong-wiki",
+  "version": "1.0.0",
+  "description": "땅콩위키 - A modern wiki system",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "echo 'No build step required'",
+    "test": "echo 'No tests specified'"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node": "20.x"
+  },
+  "keywords": ["wiki", "web", "nodejs"],
+  "author": "",
+  "license": "MIT"
+}
